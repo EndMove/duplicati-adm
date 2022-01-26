@@ -1,0 +1,4 @@
+Duplicati is a backup software that schedules and stores a full or incremental copy of the files to be kept.
+
+[GITHUB]
+Find the Gitea-ADM repository on GitHub by following this link: https://github.com/EndMove/duplicati-adm
