@@ -2,3 +2,12 @@ Duplicati is a backup software that schedules and stores a full or incremental c
 
 [GITHUB]
 Find the Gitea-ADM repository on GitHub by following this link: https://github.com/EndMove/duplicati-adm
+
+[ISSUES]
+Do not hesitate to report any problem or ask for help by following this link: https://github.com/EndMove/duplicati-adm/issues
+
+-----------------------------------------------------------
+
+But why use Duplicati?
+
+Duplicati is a powerful tool, it allows you to backup all your server data in a fast, simple and efficient way! On any cloud! While encrypting your data, making them inviolable, untouchable.

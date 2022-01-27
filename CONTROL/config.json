@@ -16,7 +16,7 @@
   "adm-desktop":{
     "app":{
       "port":3200,
-      "protocol":"http",
+      "protocol":"https",
       "type":"custom",
       "url":"/" 
     },
