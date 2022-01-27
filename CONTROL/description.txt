@@ -1,7 +1,19 @@
 Duplicati is a backup software that schedules and stores a full or incremental copy of the files to be kept.
+*-*-* Works with HTTPS, encrypted communication *-*-*
+
+[INFORMATION & DISCLAIMER]
+This application is sensitive, as it allows indirect access to all user and system files on your server. This means that it is essential to restrict the app access, not only by setting up a strong access password but also by limiting the panel to the local IP address of your server or a specific domain that is secure. I have forced the use of SSL certificates, this way all communication between you and the panel is protected (even using the local ip of your machine). This precaution will prevent someone with bad intentions from sniffing the encryption keys of your backup and panel.
+
+Don't forget to save the configuration files of your backup plans, because in case you uninstall the application without these configuration files you will have to reconfigure the whole application as the first time (this does not apply to updates).
+
+
+[ADMINISTRATION PANEL]
+You can access the administration panel via : "https://your-domain-name:3200", but due to the critical systems that this application has access to we advise to block access to the WAN in the Duplicati settings and to access the application via VPN or LAN: "https://your-server-ip:3200".
+
 
 [GITHUB]
-Find the Gitea-ADM repository on GitHub by following this link: https://github.com/EndMove/duplicati-adm
+Find the Duplicati-adm repository on GitHub by following this link: https://github.com/EndMove/duplicati-adm
+
 
 [ISSUES]
 Do not hesitate to report any problem or ask for help by following this link: https://github.com/EndMove/duplicati-adm/issues

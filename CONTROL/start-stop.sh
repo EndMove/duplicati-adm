@@ -5,7 +5,6 @@ echo "duplicati-adm: --== start-stop ==--"
 # Environment variables
 export DUPLICATI_CONFIG=$APKG_PKG_DIR/config
 export DUPLICATI_CRT=$DUPLICATI_CONFIG/ssl.pfx
-export DUPLICATI_CRT_PWD='root'
 export DUPLICATI_TMP=$APKG_PKG_DIR/tmp
 ADM_MONO=/usr/local/bin/mono
 
@@ -13,12 +12,15 @@ case "$1" in
 	start)
 		# Starting duplicati
 		echo "duplicati-adm: Starting service..."
+		# Move to the application directory and check that the tmp/ and config/ directories exist
 		cd "$APKG_PKG_DIR" || exit 1;
-		# Check/regen pfx certificates
-		sh ./CONTROL/certificate-manager.sh
-		# Make tmp dir and start duplicati
+		[ ! -d "$DUPLICATI_CONFIG" ] && mkdir "$DUPLICATI_CONFIG";
 		[ ! -d "$DUPLICATI_TMP" ] && mkdir "$DUPLICATI_TMP";
-		$ADM_MONO "$APKG_PKG_DIR"/Duplicati.Server.exe --webservice-port=3200 --webservice-sslcertificatefile="$DUPLICATI_CRT" --webservice-sslcertificatepassword="$DUPLICATI_CRT_PWD" --webservice-interface=* --webservice-allowed-hostnames=* --log-retention=30D --auto-update=false --server-datafolder="$DUPLICATI_CONFIG" --tempdir="$DUPLICATI_TMP" > /dev/null
+		# Check/Regen pfx certificate
+		sh ./CONTROL/certificate-manager.sh
+		sleep 2
+	  # Run duplicati
+		$ADM_MONO "$APKG_PKG_DIR"/Duplicati.Server.exe --webservice-port=3200 --webservice-sslcertificatefile="$DUPLICATI_CRT" --webservice-sslcertificatepassword=root --webservice-interface=* --webservice-allowed-hostnames=* --log-retention=30D --auto-update=false --server-datafolder="$DUPLICATI_CONFIG" --tempdir="$DUPLICATI_TMP" > /dev/null &
 		echo "done."
 		;;
 	stop)
