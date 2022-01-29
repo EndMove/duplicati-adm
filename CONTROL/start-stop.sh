@@ -20,7 +20,7 @@ case "$1" in
 		sh ./CONTROL/certificate-manager.sh
 		sleep 2
 	  # Run duplicati
-		$ADM_MONO "$APKG_PKG_DIR"/Duplicati.Server.exe --webservice-port=3200 --webservice-sslcertificatefile="$DUPLICATI_CRT" --webservice-sslcertificatepassword=root --webservice-interface=* --webservice-allowed-hostnames=* --log-retention=30D --auto-update=false --server-datafolder="$DUPLICATI_CONFIG" --tempdir="$DUPLICATI_TMP" > /dev/null &
+		$ADM_MONO "$APKG_PKG_DIR"/Duplicati.Server.exe --webservice-port=3200 --webservice-interface=* --webservice-allowed-hostnames=* --auto-update=false --log-retention=30D --log-file="$DUPLICATI_CONFIG/log-file.log" --server-datafolder="$DUPLICATI_CONFIG" --tempdir="$DUPLICATI_TMP" > /dev/null &
 		echo "done."
 		;;
 	stop)
@@ -28,7 +28,7 @@ case "$1" in
 		echo "duplicati-adm: Stopping service..."
 		for i in $(ps -ef | grep duplicati | awk '{print $1}'); do
 		    # SIGKILL all duplicati process
-		    kill -9 "$i" 2>/dev/null
+		    kill -s SIGTERM "$i" 2>/dev/null
 		done
 		echo "done."
 		;;

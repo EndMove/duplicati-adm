@@ -1,14 +1,22 @@
 Duplicati is a backup software that schedules and stores a full or incremental copy of the files to be kept.
-*-*-* Works with HTTPS, encrypted communication *-*-*
+===*-*-*= DUPLICATI 2.0 Beta (Most Stable Version) =*-*-*===
 
 [INFORMATION & DISCLAIMER]
-This application is sensitive, as it allows indirect access to all user and system files on your server. This means that it is essential to restrict the app access, not only by setting up a strong access password but also by limiting the panel to the local IP address of your server or a specific domain that is secure. I have forced the use of SSL certificates, this way all communication between you and the panel is protected (even using the local ip of your machine). This precaution will prevent someone with bad intentions from sniffing the encryption keys of your backup and panel.
+This application is sensitive, as it allows indirect access to all user and system files on your server. This means that it is essential to restrict the app access, not only by setting up a strong access password but also by limiting the admin panel to the local IP address of your server or a specific domain that is secure. Il est possible d'activier le protocole HTTPS pour encrypter les communication entre votre périphérique et Duplicati néamoin Duplicati n'est qu'en BETA et le serveur web n'est pas stable en HTTPS.
 
 Don't forget to save the configuration files of your backup plans, because in case you uninstall the application without these configuration files you will have to reconfigure the whole application as the first time (this does not apply to updates).
 
 
 [ADMINISTRATION PANEL]
-You can access the administration panel via : "https://your-domain-name:3200", but due to the critical systems that this application has access to we advise to block access to the WAN in the Duplicati settings and to access the application via VPN or LAN: "https://your-server-ip:3200".
+You can access the administration panel via : "http://your-domain-name:3200", but due to the critical systems that this application has access to we advise to block access to the WAN in the Duplicati settings and to access the application via VPN (recommended) or LAN: "http://your-server-ip:3200".
+
+
+[SETUP]
+(+) Securing
+Go to the panel in "Panel => Settings => Access to the user interface", set a strong password and disable remote access to the panel or set a trusted domain (remember to save at the bottom of the page).
+
+(+) Ssl/https
+If you want to enable HTTPS, access your server using SFTP/SSH and follow the instructions available here: https://github.com/EndMove/duplicati-adm/blob/master/README.md#sslhttps-unstable
 
 
 [GITHUB]
@@ -23,3 +31,6 @@ Do not hesitate to report any problem or ask for help by following this link: ht
 But why use Duplicati?
 
 Duplicati is a powerful tool, it allows you to backup all your server data in a fast, simple and efficient way! On any cloud! While encrypting your data, making them inviolable, untouchable.
+
+The default cryptographic methods available are : Sans cryptage; Chiffrement AES-256; Chiffrement GNU Privacy Guard.
+The default storage methods available are : FTP; OpenStack; S3, SFTP (ssh); WebDAV; Azure blob; B2 Cloud Storage; Box.com; Dropbox; Google Cloud Storage; Google Drive; HubiC; Jottacloud; Maga.nz; Microsoft Office 365; Microsoft SharePoint v2; Mocrosoft SharePoint; Microsoft OneDrive v2; Microsoft OneDrive; Rackspace Cloudfiles; Rclone; Sia Decentralized Cloud; Tahoe-LAFS; Tardigrade Decentralized Cloud Storage; Tencent COS.

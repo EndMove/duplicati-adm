@@ -39,10 +39,27 @@ This application will create a folder in `/volume1/.@plugins/AppCentral/duplicat
 
 It is essential for the application to be configured from the panel, if any changes are made directly in the files it can lead to structural destruction of the embedded database.
 
-## How to update Gitea for ADM ?
+## Information
+
+### App description
+
+* Description in English [here](https://raw.githubusercontent.com/EndMove/duplicati-adm/master/CONTROL/description.txt).
+* Description in French [here](https://raw.githubusercontent.com/EndMove/duplicati-adm/master/CONTROL/description-fr.txt).
+
+### SSL/HTTPS (Unstable)
+
+At the moment the use of Duplicati with an SSL certificate is not reliable. Indeed it happens that when restarting duplicati in HTTPS the web server crashes, once this happens one time, it does not stop until HTTP is used again. The source of the problem has not yet been found.
+
+If you want to use HTTPS anyway, edit the `/volume1/.@plugins/AppCentral/duplicati/CONTROL/start-stop.sh` file and add the following two parameters to the startup command, line 23 :
+
+```sh
+--webservice-sslcertificatefile="$DUPLICATI_CRT" --webservice-sslcertificatepassword=root
+```
+
+## How to update Duplicati for ADM ?
 
 When an update is available you can do it directly from APP CENTRAL in ADM. If you want to do it manually, nothing could be easier. Uninstall Duplicati and install the new version all your data will be kept.
 
 ## An issue or a request ?
 
-You can report a problem, ask for help or make changes at any time by following this [link](https://github.com/EndMove/duplicati-adm/issues/new). Remember that I am not the developer of Gitea but of Gitea-ADM.
+You can report a problem, ask for help or make changes at any time by following this [link](https://github.com/EndMove/duplicati-adm/issues/new). Remember that I am not the developer of Duplicati but of Duplicati-ADM.

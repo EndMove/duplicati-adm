@@ -2,7 +2,7 @@
   "general":{
     "package":"duplicati",
     "name":"Duplicati",
-    "version":"2.0.6.3.r02",
+    "version":"2.0.6.3.r01",
     "depends":[
       "mono(>=6.12.0.0.r01)"
     ],
@@ -16,7 +16,7 @@
   "adm-desktop":{
     "app":{
       "port":3200,
-      "protocol":"https",
+      "protocol":"http",
       "type":"custom",
       "url":"/" 
     },
