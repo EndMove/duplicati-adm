@@ -1,0 +1,38 @@
+Duplicati est un logiciel de sauvegarde qui programme et stocke une copie complète ou incrémentielle des fichiers à conserver.
+===*-*-*= DUPLICATI 2.0 Beta (Most Stable Version) =*-*-*===
+
+[INFORMATION & DISCLAIMER]
+Cette application est sensible, car elle permet un accès indirect à tous les fichiers utilisateur et système de votre serveur. Cela signifie qu'il est essentiel de restreindre l'accès à l'application, non seulement en mettant en place un mot de passe d'accès fort mais aussi en limitant le panneau d'administration à l'adresse IP locale de votre serveur ou à un domaine spécifique qui est sécurisé. Il est possible d'activer le protocole HTTPS pour crypter les communications entre votre périphérique et Duplicati néamoin Duplicati n'est qu'en BETA et le serveur web n'est pas stable en HTTPS.
+
+N'oubliez pas de sauvegarder les fichiers de configuration de vos plans de sauvegarde, car en cas de désinstallation de l'application sans ces fichiers de configuration, vous devrez reconfigurer toute l'application comme la première fois (ceci ne s'applique pas aux mises à jour).
+
+
+[PANNEAU D'ADMINISTRATION]
+Vous pouvez accéder au panneau d'administration via : "http://your-domain-name:3200", mais en raison des systèmes critiques auxquels cette application a accès, nous conseillons de bloquer l'accès au WAN dans les paramètres de Duplicati et d'accéder à l'application via VPN (recommandé) ou LAN : "http://your-server-ip:3200".
+
+
+[SETUP]
+(+) Sécurisation
+Allez dans le panneau dans "Panneau => Paramètres => Accès à l'interface utilisateur", définissez un mot de passe fort et désactivez l'accès à distance au panneau ou définissez un domaine de confiance (n'oubliez pas d'enregistrer en bas de page).
+
+(+) Ssl/https
+Si vous voulez activer HTTPS, accédez à votre serveur en utilisant SFTP/SSH et suivez les instructions disponibles ici : https://github.com/EndMove/duplicati-adm/blob/master/README.md#sslhttps-unstable
+
+
+[GITHUB]
+Trouvez le dépôt Duplicati-adm sur GitHub en suivant ce lien : https://github.com/EndMove/duplicati-adm
+
+
+[ISSUES]
+N'hésitez pas à signaler tout problème ou à demander de l'aide en suivant ce lien : https://github.com/EndMove/duplicati-adm/issues
+
+-----------------------------------------------------------
+
+Mais pourquoi utiliser Duplicati ?
+
+Duplicati est un outil puissant, il vous permet de sauvegarder toutes les données de votre serveur d'une manière rapide, simple et efficace ! Sur n'importe quel cloud ! Tout en cryptant vos données, les rendant inviolables, intouchables.
+
+Les méthodes de cryptage disponibles par défaut sont : Sans cryptage ; Chiffrement AES-256 ; Chiffrement GNU Privacy Guard.
+Les méthodes de stockage par défaut disponibles sont : FTP ; OpenStack ; S3, SFTP (ssh) ; WebDAV ; Azure blob ; B2 Cloud Storage ; Box.com ; Dropbox ; Google Cloud Storage ; Google Drive ; HubiC ; Jottacloud ; Maga.nz ; Microsoft Office 365 ; Microsoft SharePoint v2 ; Mocrosoft SharePoint ; Microsoft OneDrive v2 ; Microsoft OneDrive ; Rackspace Cloudfiles ; Rclone ; Sia Decentralized Cloud ; Tahoe-LAFS ; Tardigrade Decentralized Cloud Storage ; Tencent COS.
+*** Traduit avec www.DeepL.com/Translator (version gratuite) ***
+

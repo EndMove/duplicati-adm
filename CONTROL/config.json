@@ -1,0 +1,37 @@
+{
+  "general":{
+    "package":"duplicati",
+    "name":"Duplicati",
+    "version":"2.0.6.3.r01",
+    "depends":[
+      "mono(>=6.12.0.0.r01)"
+    ],
+    "developer":"Duplicati",
+    "maintainer":"EndMove",
+    "email":"contact@endmove.eu",
+    "website":"https://www.duplicati.com/",
+    "architecture":"x86-64",
+    "firmware":"3.5.0"
+  },
+  "adm-desktop":{
+    "app":{
+      "port":3200,
+      "protocol":"http",
+      "type":"custom",
+      "url":"/" 
+    },
+    "privilege":{
+      "accessible":"administrators", 
+      "customizable":true 
+    }
+  },
+  "register":{
+    "boot-priority":{
+      "start-order":60,
+      "stop-order":40
+    },
+    "port":[
+      "T3200"
+    ]
+  }
+}
