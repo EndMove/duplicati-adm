@@ -25,13 +25,16 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
     EditUriBackendConfig.templates['gcs']         = 'templates/backends/gcs.html';
     EditUriBackendConfig.templates['b2']          = 'templates/backends/b2.html';
     EditUriBackendConfig.templates['mega']        = 'templates/backends/mega.html';
-    EditUriBackendConfig.templates['jottacloud']  = 'templates/backends/jottacloud.html';
+    EditUriBackendConfig.templates['jottacloud']  = 'templates/backends/oauth.html';
+    EditUriBackendConfig.templates['idrive']      = 'templates/backends/idrive.html';
     EditUriBackendConfig.templates['box']         = 'templates/backends/oauth.html';
-    EditUriBackendConfig.templates['dropbox'] = 'templates/backends/oauth.html';
-    EditUriBackendConfig.templates['sia']       = 'templates/backends/sia.html';
+    EditUriBackendConfig.templates['dropbox']     = 'templates/backends/oauth.html';
+    EditUriBackendConfig.templates['sia']         = 'templates/backends/sia.html';
+    EditUriBackendConfig.templates['storj']       = 'templates/backends/storj.html';
     EditUriBackendConfig.templates['tardigrade']  = 'templates/backends/tardigrade.html';
-    EditUriBackendConfig.templates['rclone']       = 'templates/backends/rclone.html';
+	EditUriBackendConfig.templates['rclone']       = 'templates/backends/rclone.html';
 	EditUriBackendConfig.templates['cos']       = 'templates/backends/cos.html';
+    EditUriBackendConfig.templates['e2'] = 'templates/backends/e2.html';
 
     EditUriBackendConfig.testers['s3'] = function(scope, callback) {
 
@@ -157,21 +160,47 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
         scope.s3_client_options = s3_client_options;
     };
 	
+	EditUriBackendConfig.loaders['storj'] = function (scope) {
+        if (scope.storj_satellites == null) {
+            AppService.post('/webmodule/storj-getconfig', {'storj-config': 'Satellites'}).then(function (data) {
+                scope.storj_satellites = data.data.Result;
+                if (scope.storj_satellite == undefined && scope.storj_satellite_custom == undefined)
+                    scope.storj_satellite = 'us1.storj.io:7777';
+
+            }, AppUtils.connectionError);
+        } else {
+            if (scope.storj_satellite == undefined && scope.storj_satellite_custom == undefined)
+                scope.storj_satellite = 'us1.storj.io:7777';
+        }
+		
+		if (scope.storj_auth_methods == null) {
+            AppService.post('/webmodule/storj-getconfig', {'storj-config': 'AuthenticationMethods'}).then(function (data) {
+                scope.storj_auth_methods = data.data.Result;
+                if (scope.storj_auth_method == undefined)
+                    scope.storj_auth_method = 'API key';
+
+            }, AppUtils.connectionError);
+        } else {
+            if (scope.storj_auth_method == undefined)
+                scope.storj_auth_method = 'API key';
+        }
+    };
+	
 	EditUriBackendConfig.loaders['tardigrade'] = function (scope) {
         if (scope.tardigrade_satellites == null) {
-            AppService.post('/webmodule/tardigrade-getconfig', {'tardigrade-config': 'Satellites'}).then(function (data) {
+            AppService.post('/webmodule/storj-getconfig', {'storj-config': 'Satellites'}).then(function (data) {
                 scope.tardigrade_satellites = data.data.Result;
                 if (scope.tardigrade_satellite == undefined && scope.tardigrade_satellite_custom == undefined)
-                    scope.tardigrade_satellite = 'us-central-1.tardigrade.io:7777';
+                    scope.tardigrade_satellite = 'us1.storj.io:7777';
 
             }, AppUtils.connectionError);
         } else {
             if (scope.tardigrade_satellite == undefined && scope.tardigrade_satellite_custom == undefined)
-                scope.tardigrade_satellite = 'us-central-1.tardigrade.io:7777';
+                scope.tardigrade_satellite = 'us1.storj.io:7777';
         }
 		
 		if (scope.tardigrade_auth_methods == null) {
-            AppService.post('/webmodule/tardigrade-getconfig', {'tardigrade-config': 'AuthenticationMethods'}).then(function (data) {
+            AppService.post('/webmodule/storj-getconfig', {'storj-config': 'AuthenticationMethods'}).then(function (data) {
                 scope.tardigrade_auth_methods = data.data.Result;
                 if (scope.tardigrade_auth_method == undefined)
                     scope.tardigrade_auth_method = 'API key';
@@ -240,6 +269,7 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
     EditUriBackendConfig.loaders['onedrivev2']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.loaders['sharepoint']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.loaders['msgroup']     = function() { return this['oauth-base'].apply(this, arguments); };
+    EditUriBackendConfig.loaders['jottacloud']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.loaders['box']         = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.loaders['dropbox']     = function() { return this['oauth-base'].apply(this, arguments); };
 
@@ -394,6 +424,7 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
     EditUriBackendConfig.parsers['onedrive']    = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.parsers['onedrivev2']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.parsers['sharepoint']  = function() { return this['oauth-base'].apply(this, arguments); };
+    EditUriBackendConfig.parsers['jottacloud']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.parsers['box']         = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.parsers['dropbox']     = function() { return this['oauth-base'].apply(this, arguments); };
 
@@ -451,11 +482,18 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
             delete options[nukeopts[x]];
     };
 
-    EditUriBackendConfig.parsers['mega'] = function (scope, module, server, port, path, options) {
-        EditUriBackendConfig.mergeServerAndPath(scope);
+    EditUriBackendConfig.parsers['e2'] = function (scope, module, server, port, path, options) {
+        if (options['--access-key-id'])
+            scope.Username = options['--access-key-id'];
+        if (options['--access-key-secret'])
+            scope.Password = options['--access-key-secret'];
+
+        var nukeopts = ['--access-key-id', '--access-key-secret'];
+        for (var x in nukeopts)
+            delete options[nukeopts[x]];
     };
 
-    EditUriBackendConfig.parsers['jottacloud'] = function (scope, module, server, port, path, options) {
+    EditUriBackendConfig.parsers['mega'] = function (scope, module, server, port, path, options) {
         EditUriBackendConfig.mergeServerAndPath(scope);
     };
 
@@ -486,7 +524,30 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
             delete options[nukeopts[x]];
     }
 	
-	EditUriBackendConfig.parsers['tardigrade'] = function (scope, module, server, port, path, options) {
+    EditUriBackendConfig.parsers['storj'] = function (scope, module, server, port, path, options) {
+        if (options['--storj-auth-method'])
+            scope.storj_auth_method = options['--storj-auth-method'];
+        if (options['--storj-satellite'])
+            scope.storj_satellite = options['--storj-satellite'];
+        if (options['--storj-api-key'])
+            scope.storj_api_key = options['--storj-api-key'];
+        if (options['--storj-secret'])
+            scope.storj_secret = options['--storj-secret'];
+        if (options['--storj-secret-verify'])
+            scope.storj_secret_verify = options['--storj-secret-verify'];
+        if (options['--storj-shared-access'])
+            scope.storj_shared_access = options['--storj-shared-access'];
+        if (options['--storj-bucket'])
+            scope.storj_bucket = options['--storj-bucket'];
+        if (options['--storj-folder'])
+            scope.storj_folder = options['--storj-folder'];
+
+        var nukeopts = ['--storj-auth-method','--storj-satellite', '--storj-api-key', '--storj-secret', '--storj-secret-verify', '--storj-shared-access', '--storj-bucket', '--storj-folder'];
+        for (var x in nukeopts)
+            delete options[nukeopts[x]];
+    };
+	
+    EditUriBackendConfig.parsers['tardigrade'] = function (scope, module, server, port, path, options) {
         if (options['--tardigrade-auth-method'])
             scope.tardigrade_auth_method = options['--tardigrade-auth-method'];
         if (options['--tardigrade-satellite'])
@@ -495,14 +556,16 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
             scope.tardigrade_api_key = options['--tardigrade-api-key'];
         if (options['--tardigrade-secret'])
             scope.tardigrade_secret = options['--tardigrade-secret'];
-		if (options['--tardigrade-shared-access'])
+        if (options['--tardigrade-secret-verify'])
+            scope.tardigrade_secret_verify = options['--tardigrade-secret-verify'];
+        if (options['--tardigrade-shared-access'])
             scope.tardigrade_shared_access = options['--tardigrade-shared-access'];
-		if (options['--tardigrade-bucket'])
+        if (options['--tardigrade-bucket'])
             scope.tardigrade_bucket = options['--tardigrade-bucket'];
-		if (options['--tardigrade-folder'])
+        if (options['--tardigrade-folder'])
             scope.tardigrade_folder = options['--tardigrade-folder'];
-
-        var nukeopts = ['--tardigrade-auth-method','--tardigrade-satellite', '--tardigrade-api-key', '--tardigrade-secret', '--tardigrade-shared-access', '--tardigrade-bucket', '--tardigrade-folder'];
+		
+        var nukeopts = ['--tardigrade-auth-method','--tardigrade-satellite', '--tardigrade-api-key', '--tardigrade-secret', '--tardigrade-secret-verify', '--tardigrade-shared-access', '--tardigrade-bucket', '--tardigrade-folder'];
         for (var x in nukeopts)
             delete options[nukeopts[x]];
     };
@@ -591,6 +654,7 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
     EditUriBackendConfig.builders['onedrivev2']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.builders['sharepoint']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.builders['msgroup']     = function() { return this['oauth-base'].apply(this, arguments); };
+    EditUriBackendConfig.builders['jottacloud']  = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.builders['box']         = function() { return this['oauth-base'].apply(this, arguments); };
     EditUriBackendConfig.builders['dropbox']     = function() { return this['oauth-base'].apply(this, arguments); };
 
@@ -707,6 +771,24 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
         return url;
     };
 
+    EditUriBackendConfig.builders['e2'] = function (scope) {
+        var opts = {};
+
+        EditUriBackendConfig.merge_in_advanced_options(scope, opts);
+
+        // Slightly better error message
+        scope.Folder = scope.Server;
+
+        var url = AppUtils.format('{0}://{1}/{2}{3}',
+            scope.Backend.Key,
+            scope.Server || '',
+            scope.Path || '',
+            AppUtils.encodeDictAsUrl(opts)
+        );
+
+        return url;
+    };
+
     EditUriBackendConfig.builders['mega'] = function (scope) {
         var opts = {};
 
@@ -743,15 +825,36 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
         return url;
     }
 	
+	EditUriBackendConfig.builders['storj'] = function (scope) {
+        var opts = {
+            'storj-auth-method': scope.storj_auth_method,
+            'storj-satellite': scope.storj_satellite,
+            'storj-api-key': scope.storj_api_key,
+            'storj-secret': scope.storj_secret,
+            'storj-shared-access': scope.storj_shared_access,
+            'storj-bucket': scope.storj_bucket,
+            'storj-folder': scope.storj_folder
+        };
+
+        EditUriBackendConfig.merge_in_advanced_options(scope, opts);
+
+        var url = AppUtils.format('{0}://storj.io/config{1}',
+            scope.Backend.Key,
+            AppUtils.encodeDictAsUrl(opts)
+        );
+
+        return url;
+    };
+	
 	EditUriBackendConfig.builders['tardigrade'] = function (scope) {
         var opts = {
-			'tardigrade-auth-method': scope.tardigrade_auth_method,
+            'tardigrade-auth-method': scope.tardigrade_auth_method,
             'tardigrade-satellite': scope.tardigrade_satellite,
             'tardigrade-api-key': scope.tardigrade_api_key,
             'tardigrade-secret': scope.tardigrade_secret,
             'tardigrade-shared-access': scope.tardigrade_shared_access,
-			'tardigrade-bucket': scope.tardigrade_bucket,
-			'tardigrade-folder': scope.tardigrade_folder
+            'tardigrade-bucket': scope.tardigrade_bucket,
+            'tardigrade-folder': scope.tardigrade_folder
         };
 
         EditUriBackendConfig.merge_in_advanced_options(scope, opts);
@@ -791,23 +894,6 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
 
 
     }
-
-    EditUriBackendConfig.builders['jottacloud'] = function (scope) {
-        var opts = {};
-
-        EditUriBackendConfig.merge_in_advanced_options(scope, opts);
-
-        // Slightly better error message
-        scope.Folder = scope.Path;
-
-        var url = AppUtils.format('{0}://{1}{2}',
-            scope.Backend.Key,
-            scope.Path,
-            AppUtils.encodeDictAsUrl(opts)
-        );
-
-        return url;
-    };
 
 
     EditUriBackendConfig.builders['cos'] = function (scope) {
@@ -875,6 +961,7 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
 
     EditUriBackendConfig.validaters['googledrive'] = EditUriBackendConfig.validaters['authid-base'];
     EditUriBackendConfig.validaters['gcs']         = EditUriBackendConfig.validaters['authid-base'];
+    EditUriBackendConfig.validaters['jottacloud']  = EditUriBackendConfig.validaters['authid-base'];
     EditUriBackendConfig.validaters['box']         = EditUriBackendConfig.validaters['authid-base'];
     EditUriBackendConfig.validaters['dropbox']     = EditUriBackendConfig.validaters['authid-base'];
     EditUriBackendConfig.validaters['onedrive']    = EditUriBackendConfig.validaters['authid-base'];
@@ -1084,16 +1171,6 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
             continuation();
     };
 
-    EditUriBackendConfig.validaters['jottacloud'] = function (scope, continuation) {
-        scope.Path = scope.Path || '';
-        var res =
-            EditUriBackendConfig.require_field(scope, 'Username', gettextCatalog.getString('Username')) &&
-            EditUriBackendConfig.require_field(scope, 'Password', gettextCatalog.getString('Password'));
-
-        if (res)
-            continuation();
-    };
-
     EditUriBackendConfig.validaters['sia'] = function (scope, continuation) {
         var res =
             EditUriBackendConfig.require_field(scope, 'Server', gettextCatalog.getString('Server'));
@@ -1110,7 +1187,71 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
             continuation();
     };
 	
+	EditUriBackendConfig.validaters['storj'] = function (scope, continuation) {
+		var res = true;
+		
+		if(res && !scope['storj_auth_method']){
+			res = EditUriBackendConfig.require_field(scope, 'storj_auth_method', gettextCatalog.getString('Authentication method'));
+		}
+
+		if(res && scope['storj_auth_method'] == 'Access grant'){
+			res = EditUriBackendConfig.require_field(scope, 'storj_shared_access', gettextCatalog.getString('storj_shared_access')) &&
+				  EditUriBackendConfig.require_field(scope, 'storj_bucket', gettextCatalog.getString('Bucket'));
+		}
+		
+		if(res && scope['storj_auth_method'] == 'API key'){
+			res = EditUriBackendConfig.require_field(scope, 'storj_api_key', gettextCatalog.getString('API key')) &&
+				  EditUriBackendConfig.require_field(scope, 'storj_secret', gettextCatalog.getString('Encryption passphrase')) &&
+				  EditUriBackendConfig.require_field(scope, 'storj_bucket', gettextCatalog.getString('Bucket'));
+		}
+		
+		if(res && scope['storj_auth_method'] == 'API key' && !scope['storj_satellite']){
+			res = EditUriBackendConfig.require_field(scope, 'storj_satellite_custom', gettextCatalog.getString('Custom Satellite'));
+		}
+
+		if(res && scope['storj_auth_method'] == 'API key' && scope['storj_secret'] != scope['storj_secret_verify'])
+			res = EditUriBackendConfig.show_error_dialog(gettextCatalog.getString('The encryption passphrases do not match'));
+		
+		var re = new RegExp('^([a-z0-9]+([a-z0-9\-][a-z0-9])*)+(.[a-z0-9]+([a-z0-9\-][a-z0-9])*)*$');
+		if(res && scope['storj_bucket'] && (!re.test(scope['storj_bucket']) || !(scope['storj_bucket'].length > 2 && scope['storj_bucket'].length < 64))){
+			res = EditUriBackendConfig.show_error_dialog(gettextCatalog.getString('Bucket name can only be between 3 and 63 characters long and contain only lower-case characters, numbers, periods and dashes'));
+		}
+		
+		if (res)
+            continuation();
+    };
+	
 	EditUriBackendConfig.validaters['tardigrade'] = function (scope, continuation) {
+		var res = true;
+		
+		if(res && !scope['tardigrade_auth_method']){
+			res = EditUriBackendConfig.require_field(scope, 'tardigrade_auth_method', gettextCatalog.getString('Authentication method'));
+		}
+
+		if(res && scope['tardigrade_auth_method'] == 'Access grant'){
+			res = EditUriBackendConfig.require_field(scope, 'tardigrade_shared_access', gettextCatalog.getString('tardigrade_shared_access')) &&
+				  EditUriBackendConfig.require_field(scope, 'tardigrade_bucket', gettextCatalog.getString('Bucket'));
+		}
+		
+		if(res && scope['tardigrade_auth_method'] == 'API key'){
+			res = EditUriBackendConfig.require_field(scope, 'tardigrade_api_key', gettextCatalog.getString('API key')) &&
+				  EditUriBackendConfig.require_field(scope, 'tardigrade_secret', gettextCatalog.getString('Encryption passphrase')) &&
+				  EditUriBackendConfig.require_field(scope, 'tardigrade_bucket', gettextCatalog.getString('Bucket'));
+		}
+		
+		if(res && scope['tardigrade_auth_method'] == 'API key' && !scope['tardigrade_satellite']){
+			res = EditUriBackendConfig.require_field(scope, 'tardigrade_satellite_custom', gettextCatalog.getString('Custom Satellite'));
+		}
+
+		if(res && scope['tardigrade_auth_method'] == 'API key' && scope['tardigrade_secret'] != scope['tardigrade_secret_verify'])
+			res = EditUriBackendConfig.show_error_dialog(gettextCatalog.getString('The encryption passphrases do not match'));
+		
+		var re = new RegExp('^([a-z0-9]+([a-z0-9\-][a-z0-9])*)+(.[a-z0-9]+([a-z0-9\-][a-z0-9])*)*$');
+		if(res && scope['tardigrade_bucket'] && (!re.test(scope['tardigrade_bucket']) || !(scope['tardigrade_bucket'].length > 2 && scope['tardigrade_bucket'].length < 64))){
+			res = EditUriBackendConfig.show_error_dialog(gettextCatalog.getString('Bucket name can only be between 3 and 63 characters long and contain only lower-case characters, numbers, periods and dashes'));
+		}
+		
+		if (res)
             continuation();
     };
 
@@ -1133,6 +1274,50 @@ backupApp.service('EditUriBuiltins', function (AppService, AppUtils, SystemInfo,
             EditUriBackendConfig.require_field(scope, 'cos_bucket', gettextCatalog.getString('cos_bucket'));
 			
 		if (res)
+            continuation();
+    };
+
+    EditUriBackendConfig.validaters['e2'] = function (scope, continuation) {
+        var res =
+                EditUriBackendConfig.require_field(scope, 'Username', gettextCatalog.getString('Idrivee2 Access Key Id')) &&
+            EditUriBackendConfig.require_field(scope, 'Password', gettextCatalog.getString('Idrivee2 Access Key Secret')) &&
+            EditUriBackendConfig.require_field(scope, 'Server', gettextCatalog.getString('Bucket Name'));
+
+        if (res) {
+            var re = new RegExp('[^A-Za-z0-9-]');
+            var bucketname = scope['Server'] || '';
+            var ix = bucketname.search(/[^A-Za-z0-9-]/g);
+
+            if (ix >= 0) {
+                EditUriBackendConfig.show_error_dialog(gettextCatalog.getString('The \'{{fieldname}}\' field contains an invalid character: {{character}} (value: {{value}}, index: {{pos}})', {
+                    value: bucketname[ix].charCodeAt(),
+                    pos: ix,
+                    character: bucketname[ix],
+                    fieldname: gettextCatalog.getString('Bucket Name')
+                }));
+                res = false;
+            }
+        }
+
+        if (res) {
+            var pathname = scope['Path'] || '';
+            for (var i = pathname.length - 1; i >= 0; i--) {
+                var char = pathname.charCodeAt(i);
+
+                if (char == '\\'.charCodeAt(0) || char == 127 || char < 32) {
+                    EditUriBackendConfig.show_error_dialog(gettextCatalog.getString('The \'{{fieldname}}\' field contains an invalid character: {{character}} (value: {{value}}, index: {{pos}})', {
+                        value: char,
+                        pos: i,
+                        character: pathname[i],
+                        fieldname: gettextCatalog.getString('Path')
+                    }));
+                    res = false;
+                    break;
+                }
+            }
+        }
+
+        if (res)
             continuation();
     };
 });
