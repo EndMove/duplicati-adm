@@ -1,3 +1,7 @@
+Version: v2.1.0.4.r01
+- Update duplicati to v2.1.0.4
+- Remove all system native references & mono dependency
+
 Version: 2.0.7.1.r01
 - Update duplicati to v2.0.7.1
 - Remove the use of mozroots, as it is depreciated

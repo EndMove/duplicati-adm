@@ -1,6 +1,6 @@
 # duplicati-adm
 
-__Duplicati version__: _`BETA 2.0.7.1`_
+__Duplicati version__: _`BETA v2.1.0.4`_
 
 ![GitHub license](https://img.shields.io/badge/license-GPL--3.0-%23fe7d37) ![GitHub last commit](https://img.shields.io/github/last-commit/EndMove/duplicati-adm)
 
@@ -16,7 +16,6 @@ This application uses the Duplicati project available here [here](https://github
 
 ## Requirements
 
-- Framework/Library Mono (>=6.12.0.0.r01) ;
 - Framework/Library Perl (>=5.32.0.r5.4) ;
 - server with an x86-64 or arm64 architecture ;
 - ADM (>=3.5.0) ;
